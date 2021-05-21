@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
     version = 1
 )
 @TypeConverters(Converters::class)
-abstract class RunDataBase : RoomDatabase() { //dagger will handle 
+abstract class RunDataBase : RoomDatabase() { //dagger will handle
 
-    abstract fun getFunDao(): RunDao
+    abstract fun getRunDao(): RunDao
 }

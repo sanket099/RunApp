@@ -1,7 +1,8 @@
-package com.sanket.runapp
+package com.sanket.runapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.sanket.runapp.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
