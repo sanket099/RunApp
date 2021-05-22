@@ -15,6 +15,7 @@ import com.sanket.runapp.other.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.sanket.runapp.other.Constants.MAP_ZOOM
 import com.sanket.runapp.other.Constants.PATH_COLOR
 import com.sanket.runapp.other.Constants.Path_WIDTH
+import com.sanket.runapp.other.TrackingUtility
 import com.sanket.runapp.services.Path
 import com.sanket.runapp.services.Paths
 import com.sanket.runapp.services.TrackService
@@ -31,6 +32,8 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
     private var pathPoints = mutableListOf<Path>()
 
     private var map: GoogleMap? = null //actual map object
+
+    private var curTimeInMillis = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,6 +60,12 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
             pathPoints = it
             addLatestPath()
             moveCameraToUser()
+        })
+
+        TrackService.timeRunMillis.observe(viewLifecycleOwner, Observer {
+            curTimeInMillis = it
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
+            tvTimer.text = formattedTime
         })
     }
 
