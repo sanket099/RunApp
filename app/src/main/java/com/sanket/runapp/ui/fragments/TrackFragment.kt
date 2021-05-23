@@ -30,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
 import kotlinx.coroutines.currentCoroutineContext
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.round
 
 @AndroidEntryPoint
@@ -46,7 +47,8 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
 
     private var menu : Menu? = null
 
-    private var userWeight = 80f
+    @set:Inject //primitive data type
+    var userWeight = 80f
 
     override fun onCreateView(
         inflater: LayoutInflater,
