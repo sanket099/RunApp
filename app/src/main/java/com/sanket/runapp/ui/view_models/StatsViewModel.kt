@@ -10,4 +10,11 @@ import javax.inject.Inject
 class StatsViewModel @Inject constructor(
     val mainRepository: MainRepo
 ): ViewModel() {
+
+    val totalTimeRun = mainRepository.getTotalTimeInMillis()
+    val totalDistance = mainRepository.getTotalDistance()
+    val totalCalories = mainRepository.getTotalCaloriesBurned()
+    val totalAvgSpeed = mainRepository.getTotalAvgSpeed()
+    val runsSortedDate = mainRepository.getAllRunsSortedByDate()
+
 }

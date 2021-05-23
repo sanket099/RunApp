@@ -20,8 +20,9 @@ class MainActivity : AppCompatActivity() {
         navigateToTrackingFragmentIfNeeded(intent) //if activity was destroyed
         setSupportActionBar(toolbar)
 
-        bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
-        //run stats settings
+        bottomNavigationView.setupWithNavController(navHostFragment.findNavController()) //run stats settings
+        bottomNavigationView.setOnNavigationItemReselectedListener {  }
+
 
         navHostFragment.findNavController()
             .addOnDestinationChangedListener { controller, destination, arguments ->

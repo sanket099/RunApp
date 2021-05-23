@@ -30,4 +30,6 @@ object Constants {
     const val FIRST_TIME_TOGGLE = "FIRST_TIME_TOGGLE"
     const val NAME = "NAME"
     const val WEIGHT = "WEIGHT"
+
+    const val CANCEL_DIALOG_TAG = "CANCEL_DIALOG_TAG"
 }

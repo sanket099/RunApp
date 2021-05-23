@@ -18,6 +18,7 @@ import com.sanket.runapp.db.Run
 import com.sanket.runapp.other.Constants.ACTION_PAUSE_SERVICE
 import com.sanket.runapp.other.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.sanket.runapp.other.Constants.ACTION_STOP_SERVICE
+import com.sanket.runapp.other.Constants.CANCEL_DIALOG_TAG
 import com.sanket.runapp.other.Constants.MAP_ZOOM
 import com.sanket.runapp.other.Constants.PATH_COLOR
 import com.sanket.runapp.other.Constants.Path_WIDTH
@@ -66,6 +67,13 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
 
         btnToggleRun.setOnClickListener {
             toggleRun()
+        }
+
+        if(savedInstanceState != null){ //so that dialog works well on rotation
+            val cancelDialogFragment = parentFragmentManager.findFragmentByTag(CANCEL_DIALOG_TAG) as CancelDialogFragment?
+            cancelDialogFragment?.setPositiveListener {
+                stopRun()
+            }
         }
 
         btnFinishRun.setOnClickListener {
@@ -133,33 +141,27 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
     }
 
     private fun showCancelTrackingDialog(){
-        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
-            .setTitle("Cancel Run ?")
-            .setMessage("Are you sure")
-            .setIcon(R.drawable.ic_launcher_foreground)
-            .setPositiveButton("Yes"){ _, _ ->
-                stopRun()
-            }
-            .setNegativeButton("Yes"){ dialogInterface, _ ->
-                dialogInterface.cancel()
-            }
-            .create()
-        dialog.show()
+            CancelDialogFragment().apply {
+                setPositiveListener {
+                    stopRun()
+                }
+            }.show(parentFragmentManager, CANCEL_DIALOG_TAG)
     }
 
     private fun stopRun(){
+        tvTimer.text = "00:00:00:00"
         sendCommandToService(ACTION_STOP_SERVICE)
         findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
     }
 
     private fun updateTracking(isTracking : Boolean){
         this.isTracking = isTracking
-        if(!isTracking){
+        if(!isTracking && curTimeInMillis > 0L){
             //paused state
             btnToggleRun.text = "start"
             btnFinishRun.visibility = View.VISIBLE
         }
-        else{
+        else if(isTracking){
             btnToggleRun.text = "stop"
             btnFinishRun.visibility = View.GONE
             menu?.getItem(0)?.isVisible = true
