@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/cancel_tracking"
+        android:title="Cancel Run"
+        android:visible="false"
+        android:icon="@drawable/ic_launcher_foreground"
+        app:showAsAction="always"/>
+
+</menu>

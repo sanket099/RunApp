@@ -35,20 +35,30 @@ import com.sanket.runapp.other.Constants.NOTIFICATION_ID
 import com.sanket.runapp.other.Constants.TIMER_UPDATE_INTERVAL
 import com.sanket.runapp.other.TrackingUtility
 import com.sanket.runapp.ui.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 typealias Path = MutableList<LatLng>
 typealias Paths = MutableList<Path>
 
+@AndroidEntryPoint
 class TrackService : LifecycleService() { // tell live data observe function in which lifecycle state service currently is
 
     private var isFirstRun = true
+    private var killService = false
 
+    @Inject
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
+    @Inject
+    lateinit var baseNotificationBuilder : NotificationCompat.Builder
+
+    lateinit var currentNotificationBuilder : NotificationCompat.Builder
 
     private val timeRunSeconds = MutableLiveData<Long>()
 
@@ -67,11 +77,13 @@ class TrackService : LifecycleService() { // tell live data observe function in 
 
     override fun onCreate() {
         super.onCreate()
+        currentNotificationBuilder = baseNotificationBuilder // init
         initValues()
         fusedLocationProviderClient = FusedLocationProviderClient(this)
 
         isTracking.observe(this, Observer { //lifecycle service
             updateLocationTracking(it)
+            updateNotification(it)
         })
     }
 
@@ -94,6 +106,7 @@ class TrackService : LifecycleService() { // tell live data observe function in 
                 }
                 ACTION_STOP_SERVICE -> {
                     Timber.d("Stopped service")
+                    killService()
                 }
             }
         }
@@ -131,6 +144,38 @@ class TrackService : LifecycleService() { // tell live data observe function in 
     private fun pauseService(){
         isTracking.postValue(false)
         isTimerEnabled = false
+    }
+
+    private fun updateNotification(isTracking: Boolean) {
+        val notificationActionText = if (isTracking) "Pause" else "Resume"
+        val pendingIntent = if (isTracking) {
+            val pauseIntent = Intent(this, TrackService::class.java).apply {
+                action = ACTION_PAUSE_SERVICE
+            }
+            PendingIntent.getService(this, 1, pauseIntent, FLAG_UPDATE_CURRENT)
+        } else {
+            val resumeIntent = Intent(this, TrackService::class.java).apply {
+                action = ACTION_START_OR_RESUME_SERVICE
+            }
+            PendingIntent.getService(this, 2, resumeIntent, FLAG_UPDATE_CURRENT)
+        }
+
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        currentNotificationBuilder.javaClass.getDeclaredField("mActions").apply {
+            isAccessible = true // allowed to modify
+            set(
+                currentNotificationBuilder,
+                ArrayList<NotificationCompat.Action>()
+            ) //remove all actions before updating notification
+        }
+
+        if (!killService) {
+            currentNotificationBuilder = baseNotificationBuilder // new notification
+                .addAction(R.drawable.ic_launcher_foreground, notificationActionText, pendingIntent)
+            notificationManager.notify(NOTIFICATION_ID, currentNotificationBuilder.build())
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -191,25 +236,34 @@ class TrackService : LifecycleService() { // tell live data observe function in 
             createNotificationChannel(notificationManager)
         }
 
-        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+       /* val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setAutoCancel(false)
             .setOngoing(true) //cant be swipped away
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("RunApp")
             .setContentText("00:00:00")
-            .setContentIntent(getMainActivityPendingIntent())
+            .setContentIntent(getMainActivityPendingIntent())*/
 
-        startForeground(NOTIFICATION_ID, notificationBuilder.build()) //foreground service
+        startForeground(NOTIFICATION_ID, baseNotificationBuilder.build()) //foreground service
+
+        timeRunSeconds.observe(this, Observer {
+            if(!killService) {
+                val notification = currentNotificationBuilder.setContentText(
+                    TrackingUtility.getFormattedStopWatchTime(it * 1000L)
+                )
+                notificationManager.notify(NOTIFICATION_ID, notification.build())
+            }
+        })
     }
 
-    private fun getMainActivityPendingIntent() = PendingIntent.getActivity(
+   /* private fun getMainActivityPendingIntent() = PendingIntent.getActivity(
         this,
         0,
         Intent(this, MainActivity::class.java).also { // go to Main Activity on click notification
             it.action = ACTION_SHOW_TRACKING_FRAGMENT
         },
         FLAG_UPDATE_CURRENT
-    )
+    )*/
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(notificationManager: NotificationManager) {
@@ -219,5 +273,14 @@ class TrackService : LifecycleService() { // tell live data observe function in 
             IMPORTANCE_LOW      // as notification updates frequently
         )
         notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun killService(){
+        killService = true
+        isFirstRun = true
+        pauseService()
+        initValues()
+        stopForeground(true)
+        stopSelf()
     }
 }
