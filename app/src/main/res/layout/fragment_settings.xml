@@ -4,13 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:padding="16dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilName"
-        android:layout_width="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:hint="Enter Name"
+        android:textColorHint="@color/honey_dew"
+        app:boxStrokeColor="@color/honey_dew"
+        app:boxStrokeWidth="2dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+
+        android:layout_marginBottom="20sp"
+        app:hintTextColor="@color/honey_dew"
+        android:layout_marginEnd="20sp"
+        android:layout_marginStart="20sp"
+
+
+
+        android:layout_gravity="center"
+
         app:layout_constraintBottom_toTopOf="@+id/tilWeight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -19,16 +38,35 @@
             android:id="@+id/etName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColorHint="@color/honey_dew"
+            android:textColor="@color/honey_dew"
             android:ems="10"
-            android:hint="Your Name"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
             android:inputType="textPersonName" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilWeight"
-        android:layout_width="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        android:hint="Enter Weight"
+        android:textColorHint="@color/honey_dew"
+        app:boxStrokeColor="@color/honey_dew"
+        app:boxStrokeWidth="2dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:hintTextColor="@color/honey_dew"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+
+        android:layout_marginEnd="20sp"
+        android:layout_marginStart="20sp"
+
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -39,9 +77,13 @@
             android:id="@+id/etWeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
+            android:textColorHint="@color/honey_dew"
+            android:paddingStart="40dp"
+            android:textColor="@color/honey_dew"
+            android:paddingEnd="40dp"
             android:ems="10"
-            android:hint="Your Weight"
-            android:inputType="numberDecimal" />
+            android:inputType="numberDecimal"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,7 +91,9 @@
         android:id="@+id/btnApplyChanges"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20sp"
+        android:backgroundTint="@color/honey_dew"
+        android:textColor="@color/dark"
         android:text="Apply Changes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

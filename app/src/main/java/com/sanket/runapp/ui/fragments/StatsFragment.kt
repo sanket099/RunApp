@@ -3,6 +3,7 @@ package com.sanket.runapp.ui.fragments
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -17,6 +18,7 @@ import com.sanket.runapp.ui.view_models.StatsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_stats.*
 import kotlin.math.round
+
 
 @AndroidEntryPoint
 class StatsFragment : Fragment(R.layout.fragment_stats) {
@@ -52,7 +54,9 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
         barChart.apply {
             description.text = "Average Speed over Time"
             legend.isEnabled = false
+
         }
+
     }
     private fun subscribeToObserver(){
         viewModel.totalTimeRun.observe(viewLifecycleOwner, Observer {
@@ -88,6 +92,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
                 val allAvgSpeeds = it.indices.map { i -> BarEntry(i.toFloat(), it[i].avgSpeedInKMH) }
                 val barData = BarDataSet(allAvgSpeeds, "Average Speed Over time").apply {
                     valueTextColor = Color.WHITE
+                    color = ContextCompat.getColor(barChart.context, R.color.honey_dew)
 
                 }
 

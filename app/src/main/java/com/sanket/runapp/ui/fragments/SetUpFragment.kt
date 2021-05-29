@@ -40,7 +40,7 @@ class SetUpFragment: Fragment(R.layout.fragment_setup) {
             )
         }
 
-        tvContinue.setOnClickListener{
+        fab.setOnClickListener{
             val success = writeDataToSharedPreference()
             if (success)
                 findNavController().navigate(R.id.action_setupFragment_to_runFragment)

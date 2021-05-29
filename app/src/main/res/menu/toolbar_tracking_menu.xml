@@ -6,7 +6,8 @@
         android:id="@+id/cancel_tracking"
         android:title="Cancel Run"
         android:visible="false"
-        android:icon="@drawable/ic_launcher_foreground"
+
+        android:icon="@drawable/ic_round_close_24"
         app:showAsAction="always"/>
 
 </menu>

@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
 
         navHostFragment.findNavController()
-            .addOnDestinationChangedListener { controller, destination, arguments ->
+            .addOnDestinationChangedListener { _, destination, _ ->
 
                 when(destination.id){
                     R.id.settingsFragment, R.id.runFragment, R.id.statisticsFragment ->

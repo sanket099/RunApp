@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.sanket.runapp.BuildConfig
 import com.sanket.runapp.R
 import com.sanket.runapp.db.Run
 import com.sanket.runapp.other.TrackingUtility
@@ -19,6 +20,7 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
 
     val diffCallback = object : DiffUtil.ItemCallback<Run>() { //compare two run objects
         override fun areItemsTheSame(oldItem: Run, newItem: Run): Boolean {
+            BuildConfig.APPLICATION_ID
             return oldItem.id == newItem.id
         }
 

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="md_blue_50">#E3F2FD</color>
+
+  <!--  https://coolors.co/e63946-f1faee-a8dadc-457b9d-1d3557
+    https://color.adobe.com/search?q=running-->
+
+   <!-- <color name="md_blue_50">#E3F2FD</color>
     <color name="md_blue_100">#BBDEFB</color>
     <color name="md_blue_200">#90CAF9</color>
     <color name="md_blue_300">#64B5F6</color>
@@ -14,5 +18,23 @@
     <color name="md_blue_A400">#2979FF</color>
     <color name="md_blue_A700">#2962FF</color>
     <color name="colorAccent">#FFE600</color>
-    <color name="errorColor">#D50000</color>
+    <color name="errorColor">#D50000</color>-->
+  <color name="white">#FFFF</color>
+  <color name="black">#212121</color>
+  
+  <color name="background">#212121</color>
+  <color name="dark">#181818</color>
+  <color name="card_background">#3D3D3D</color>
+  <color name="light">#AAAAAA</color>
+  <color name="honey_dew">#F1FAEE</color>
+  
+  <!--<color name="prussian_blue">#1D3557</color>
+  <color name="prussian_blue_fade">#4D1D3557</color>
+  <color name="celadon_blue">#457B9D</color>
+  <color name="powder_blue">#A8DADC</color>
+  <color name="honey_dew">#F1FAEE</color>
+  <color name="imperial_red">#E63946</color>
+-->
+  <color name="mtrl_textinput_default_box_stroke_color">#1D3557</color>
+
 </resources>
