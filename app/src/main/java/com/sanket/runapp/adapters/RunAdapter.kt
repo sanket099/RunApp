@@ -68,6 +68,12 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
 
             val caloriesBurned = "${run.caloriesBurned} kcal"
             tvCalories.text = caloriesBurned
+
+            val runName = run.runName
+            tvRunName.text = runName
+
         }
+
+
     }
 }

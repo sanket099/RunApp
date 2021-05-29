@@ -18,13 +18,13 @@ class CancelDialogFragment : DialogFragment() {
          return MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
             .setTitle("Cancel Run ?")
             .setMessage("Are you sure")
-            .setIcon(R.drawable.ic_launcher_foreground)
+            .setIcon(R.drawable.ic_round_close_24)
             .setPositiveButton("Yes"){ _, _ ->
                 positiveListener?.let { yes ->
                     yes()
                 }
             }
-            .setNegativeButton("Yes"){ dialogInterface, _ ->
+            .setNegativeButton("No"){ dialogInterface, _ ->
                 dialogInterface.cancel()
             }
             .create()

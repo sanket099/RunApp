@@ -1,5 +1,6 @@
 package com.sanket.runapp.ui.fragments
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.sanket.runapp.R
 import com.sanket.runapp.db.Run
 import com.sanket.runapp.other.Constants.ACTION_PAUSE_SERVICE
@@ -22,12 +24,14 @@ import com.sanket.runapp.other.Constants.CANCEL_DIALOG_TAG
 import com.sanket.runapp.other.Constants.MAP_ZOOM
 import com.sanket.runapp.other.Constants.PATH_COLOR
 import com.sanket.runapp.other.Constants.Path_WIDTH
+
 import com.sanket.runapp.other.TrackingUtility
 import com.sanket.runapp.services.Path
 import com.sanket.runapp.services.Paths
 import com.sanket.runapp.services.TrackService
 import com.sanket.runapp.ui.view_models.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.dialog_add.*
 import kotlinx.android.synthetic.main.fragment_tracking.*
 import kotlinx.coroutines.currentCoroutineContext
 import java.util.*
@@ -74,11 +78,13 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
             cancelDialogFragment?.setPositiveListener {
                 stopRun()
             }
+
         }
 
         btnFinishRun.setOnClickListener {
             zoomToShowTrack()
-            endRunSaveToDb()
+            //endRunSaveToDb()
+            showNameDialog()
         }
 
         mapView.getMapAsync{
@@ -146,6 +152,33 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
                     stopRun()
                 }
             }.show(parentFragmentManager, CANCEL_DIALOG_TAG)
+    }
+
+    private fun showNameDialog(){
+        var name = ""
+        val builder = AlertDialog.Builder(context)
+        val inflater = LayoutInflater.from(context)
+        val textenter = inflater.inflate(R.layout.dialog_add, null)
+        val userinput = textenter.findViewById<TextInputEditText>(R.id.etRunName)
+        builder.setTitle("Save with Name")
+        builder.setView(textenter)
+
+
+        builder.setPositiveButton("Save"){_,_ ->
+            name = userinput?.text.toString()
+            endRunSaveToDb(name)
+
+        }
+
+        builder.setNegativeButton("Cancel"){ dialogInterface , _ ->
+            name = ""
+            endRunSaveToDb(name)
+            dialogInterface.cancel()
+        }
+
+
+        builder.create()
+        builder.show()
     }
 
     private fun stopRun(){
@@ -232,7 +265,7 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
 
     }
 
-    private fun endRunSaveToDb(){ //saving run
+    private fun endRunSaveToDb(name : String){ //saving run //finish run
         map?.snapshot { bmp -> //gives bitmap
             var distanceInMeters = 0
             for(paths in pathPoints){
@@ -243,7 +276,7 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
             val dateTimeStamp = Calendar.getInstance().timeInMillis
             val caloriesBurned = ((distanceInMeters / 1000f) * userWeight).toInt()
 
-            val run = Run(bmp, dateTimeStamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
+            val run = Run(bmp, dateTimeStamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned, name)
 
             viewModel.insertRun(run)
 

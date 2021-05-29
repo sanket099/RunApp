@@ -55,6 +55,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             description.text = "Average Speed over Time"
             legend.isEnabled = false
 
+
         }
 
     }

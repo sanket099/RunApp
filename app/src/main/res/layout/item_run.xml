@@ -22,6 +22,20 @@
 
 >
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvRunName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/righteous"
+            android:text="Run Name"
+            android:textColor="@color/honey_dew"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
         <ImageView
             android:id="@+id/ivRunImage"
             android:layout_width="0dp"
@@ -32,7 +46,7 @@
             android:src="@drawable/ic_launcher_foreground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/tvRunName" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvDate"
