@@ -1,9 +1,11 @@
 package com.sanket.runapp.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.sanket.runapp.R
@@ -46,4 +48,16 @@ class MainActivity : AppCompatActivity() {
             navHostFragment.findNavController().navigate(R.id.action_global_trackingFragment)
         }
     }
+
+    private fun turnGPSOn() {
+        val provider: String = Settings.Secure.getString(contentResolver, Settings.Secure.LOCATION_PROVIDERS_ALLOWED)
+        if (!provider.contains("gps")) { //if gps is disabled
+            val poke = Intent()
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider")
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE)
+            poke.data = Uri.parse("3")
+            sendBroadcast(poke)
+        }
+    }
+
 }

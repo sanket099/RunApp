@@ -9,9 +9,9 @@ interface RunDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRun(run: Run)
 
-    @Delete
-    suspend fun deleteRun(run: Run)
 
+    @Query("DELETE from RUNTABLE where id = :deleteId")
+    suspend fun deleteRun(deleteId : Int)
     //Sorting :  DESC most recent on top
 
     @Query("SELECT * FROM RUNTABLE ORDER BY timestamp DESC") //sorting by date of run
@@ -42,5 +42,6 @@ interface RunDao {
 
     @Query("SELECT AVG(avgSpeedInKMH) FROM RUNTABLE")
     fun getTotalAvgSpeed(): LiveData<Float>
+
 }
 

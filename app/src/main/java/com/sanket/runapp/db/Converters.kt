@@ -4,8 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.room.TypeConverter
 import java.io.ByteArrayOutputStream
+import java.io.Serializable
 
-class Converters { //converting a bitmap to byteArray to save to Room
+class Converters{ //converting a bitmap to byteArray to save to Room
 
     @TypeConverter
     fun toBitmap(bytes: ByteArray): Bitmap {

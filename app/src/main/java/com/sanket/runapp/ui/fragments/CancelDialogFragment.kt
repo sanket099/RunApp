@@ -16,8 +16,8 @@ class CancelDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
          return MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
-            .setTitle("Cancel Run ?")
-            .setMessage("Are you sure")
+            .setTitle("Are you sure ?")
+
             .setIcon(R.drawable.ic_round_close_24)
             .setPositiveButton("Yes"){ _, _ ->
                 positiveListener?.let { yes ->

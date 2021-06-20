@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val mainRepository: MainRepo
+        private val mainRepository: MainRepo
 ): ViewModel() {
 
     private val runsSortedByDate = mainRepository.getAllRunsSortedByDate()
@@ -69,5 +69,9 @@ class MainViewModel @Inject constructor(
 
     fun insertRun(run : Run) = viewModelScope.launch {
         mainRepository.insertRun(run)
+    }
+
+    fun deleteRun(id : Int) = viewModelScope.launch {
+        mainRepository.deleteRun(id)
     }
 }

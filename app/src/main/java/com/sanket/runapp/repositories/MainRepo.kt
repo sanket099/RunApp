@@ -12,7 +12,7 @@ class MainRepo  @Inject constructor(
 
     suspend fun insertRun(run : Run) = runDao.insertRun(run)
 
-    suspend fun deleteRun(run: Run) = runDao.deleteRun(run)
+    suspend fun deleteRun(id: Int) = runDao.deleteRun(id)
 
     fun getAllRunsSortedByDate() = runDao.getAllRunsSortedByDate() //no suspend as live data is async by default
 

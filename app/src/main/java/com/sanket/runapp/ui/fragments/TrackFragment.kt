@@ -2,6 +2,7 @@ package com.sanket.runapp.ui.fragments
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -34,6 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.dialog_add.*
 import kotlinx.android.synthetic.main.fragment_tracking.*
 import kotlinx.coroutines.currentCoroutineContext
+import java.io.ByteArrayOutputStream
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.round
@@ -275,7 +277,8 @@ class TrackFragment : Fragment(R.layout.fragment_tracking) {
             val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10 ) / 10f //kmph //one decimal place
             val dateTimeStamp = Calendar.getInstance().timeInMillis
             val caloriesBurned = ((distanceInMeters / 1000f) * userWeight).toInt()
-
+            val bytes = ByteArrayOutputStream()
+            bmp?.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
             val run = Run(bmp, dateTimeStamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned, name)
 
             viewModel.insertRun(run)

@@ -1,5 +1,6 @@
 package com.sanket.runapp.adapters
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +16,16 @@ import kotlinx.android.synthetic.main.item_run.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
-    inner class RunViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+class RunAdapter(var onArticleClicked: ((Run) -> Unit)? = null) : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
+
+    inner class RunViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        init {
+
+            itemView.setOnClickListener {
+                onArticleClicked?.invoke(differ.currentList[adapterPosition])
+            }
+        }
+    }
 
     val diffCallback = object : DiffUtil.ItemCallback<Run>() { //compare two run objects
         override fun areItemsTheSame(oldItem: Run, newItem: Run): Boolean {
@@ -35,11 +44,11 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RunViewHolder { //recycler view init
         return RunViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_run,
-                parent,
-                false
-            )
+                LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_run,
+                        parent,
+                        false
+                )
         )
     }
 
@@ -72,8 +81,15 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
             val runName = run.runName
             tvRunName.text = runName
 
+
+
+
+
         }
 
 
+
+
     }
+
 }

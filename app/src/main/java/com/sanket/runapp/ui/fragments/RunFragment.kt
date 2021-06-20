@@ -1,8 +1,14 @@
 package com.sanket.runapp.ui.fragments
 
 import android.Manifest
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Base64
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
@@ -13,13 +19,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.sanket.runapp.R
 import com.sanket.runapp.adapters.RunAdapter
 import com.sanket.runapp.other.Constants.REQUEST_CODE_LOCATION
+import com.sanket.runapp.other.Constants.RUN_DIST
+import com.sanket.runapp.other.Constants.RUN_ID
+import com.sanket.runapp.other.Constants.RUN_IMAGE
+import com.sanket.runapp.other.Constants.RUN_NAME
+import com.sanket.runapp.other.Constants.RUN_OBJECT
+import com.sanket.runapp.other.Constants.RUN_SPEED
+import com.sanket.runapp.other.Constants.RUN_TIMEINMILLIS
 import com.sanket.runapp.other.SortType
 import com.sanket.runapp.other.TrackingUtility
+import com.sanket.runapp.ui.ZoomActivity
 import com.sanket.runapp.ui.view_models.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_zoom.*
 import kotlinx.android.synthetic.main.fragment_run.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import java.io.ByteArrayOutputStream
+import kotlin.math.max
+import kotlin.math.min
+
 
 @AndroidEntryPoint
 class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.PermissionCallbacks{
@@ -28,10 +47,18 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
 
     private val viewModel: MainViewModel by viewModels() //view model injection
 
+
+    private var mScaleGestureDetector: ScaleGestureDetector? = null
+    private var mScaleFactor = 1.0f
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestPermissions()
         setUpRecyclerView()
+
+
+
+        mScaleGestureDetector = ScaleGestureDetector(context, scaleListener)
 
         when(viewModel.sortType) { //sorting runs
             SortType.DATE -> spFilter.setSelection(0) //indices from strings array
@@ -63,12 +90,30 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
         fab.setOnClickListener{
             findNavController().navigate(R.id.action_runFragment_to_trackingFragment)
         }
+
+        runAdapter.onArticleClicked = { it ->
+           // val bundle = Bundle()
+           // bundle.putParcelable("RUN_OBJECT", it)
+
+           // startActivity(Intent(context, ZoomActivity::class.java).putExtras(bundle))
+
+            startActivity(Intent(context, ZoomActivity::class.java)
+                    .putExtra(RUN_IMAGE, getStringImage(it.img))
+                    .putExtra(RUN_NAME, it.runName.toString())
+                    .putExtra(RUN_TIMEINMILLIS, TrackingUtility.getFormattedStopWatchTime(it.timeInMillis).toString())
+                    .putExtra(RUN_SPEED, it.avgSpeedInKMH.toString())
+                    .putExtra(RUN_ID, it.id)
+                    .putExtra(RUN_DIST, it.distanceInMeters.toString())
+            )
+        }
     }
 
     private fun setUpRecyclerView() = rvRuns.apply {
         runAdapter = RunAdapter()
         adapter = runAdapter
         layoutManager = LinearLayoutManager(requireContext())
+
+
 
     }
 
@@ -78,20 +123,20 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
         }
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             EasyPermissions.requestPermissions(
-                this,
-                "You need to accept location permissions to use this app.",
-                REQUEST_CODE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                    this,
+                    "You need to accept location permissions to use this app.",
+                    REQUEST_CODE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
             )
         } else {
             EasyPermissions.requestPermissions(
-                this,
-                "You need to accept location permissions to use this app.",
-                REQUEST_CODE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    this,
+                    "You need to accept location permissions to use this app.",
+                    REQUEST_CODE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
             )
         }
     }
@@ -104,16 +149,65 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
         }
     }
 
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {}
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        turnGPSOn()
+    }
 
     override fun onRequestPermissionsResult( //callback
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this) //only this fragment receives the permission result
 
         //Easy Permissions is wonderful!
     }
+
+
+
+    private val scaleListener = object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            mScaleFactor *= detector.scaleFactor
+
+            // Don't let the object get too small or too large.
+            mScaleFactor = max(0.1f, min(mScaleFactor, 5.0f))
+
+            //  mScaleFactor *= scaleGestureDetector.scaleFactor
+            ivZoomImg.scaleX = mScaleFactor
+            ivZoomImg.scaleY = mScaleFactor
+
+            // invalidate()
+            return true
+        }
+    }
+
+    //For encoding toString
+    fun getStringImage(bmp: Bitmap?): String? {
+        val baos = ByteArrayOutputStream()
+        bmp?.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val imageBytes: ByteArray = baos.toByteArray()
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT)
+    }
+
+    //For decoding
+
+
+   // getActivity().getContentResolver().delete(uri, null, null);
+
+    private fun turnGPSOn() {
+        val provider: String = Settings.Secure.getString(context?.contentResolver, Settings.Secure.LOCATION_PROVIDERS_ALLOWED)
+        if (!provider.contains("gps")) { //if gps is disabled
+            val poke = Intent()
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider")
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE)
+            poke.data = Uri.parse("3")
+            context?.sendBroadcast(poke)
+        }
+    }
+
+
+
+
 }

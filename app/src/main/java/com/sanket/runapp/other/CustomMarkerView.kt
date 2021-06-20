@@ -35,17 +35,17 @@ class CustomMarkerView(
             timeInMillis = run.timestamp
         }
         val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
-        tvDate.text = dateFormat.format(calendar.time)
+        tvDate.text = "Time : ${dateFormat.format(calendar.time)}"
 
-        val avgSpeed = "${run.avgSpeedInKMH}km/h"
+        val avgSpeed = "Speed : ${run.avgSpeedInKMH}km/h"
         tvAvgSpeed.text = avgSpeed
 
-        val distanceInKm = "${run.distanceInMeters / 1000f}km"
+        val distanceInKm = "Distance : ${run.distanceInMeters / 1000f}km"
         tvDistance.text = distanceInKm
 
         tvDuration.text = TrackingUtility.getFormattedStopWatchTime(run.timeInMillis)
 
-        val caloriesBurned = "${run.caloriesBurned}kcal"
+        val caloriesBurned = "Calories Burned : ${run.caloriesBurned}kcal"
         tvCaloriesBurned.text = caloriesBurned
     }
 }

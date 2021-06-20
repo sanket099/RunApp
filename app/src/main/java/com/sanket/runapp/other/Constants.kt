@@ -33,5 +33,14 @@ object Constants {
 
     const val CANCEL_DIALOG_TAG = "CANCEL_DIALOG_TAG"
 
+    const val RUN_OBJECT = "RUN_OBJECT"
+
+    const val RUN_IMAGE = "RUN_IMAGE"
+    const val RUN_NAME = "RUN_NAME"
+    const val RUN_TIMEINMILLIS = "RUN_TIMEINMILLIS"
+    const val RUN_SPEED = "RUN_SPEED"
+    const val RUN_DIST = "RUN_DIST"
+    const val RUN_ID = "RUN_ID"
+
 
 }
