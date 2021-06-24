@@ -10,9 +10,12 @@ interface RunDao {
     suspend fun insertRun(run: Run)
 
 
-    @Query("DELETE from RUNTABLE where id = :deleteId")
+    @Query("DELETE FROM RUNTABLE WHERE id = :deleteId")
     suspend fun deleteRun(deleteId : Int)
     //Sorting :  DESC most recent on top
+
+    @Query("SELECT * FROM RUNTABLE where id = :runId")
+    suspend fun getRunById(runId : Int) :Run
 
     @Query("SELECT * FROM RUNTABLE ORDER BY timestamp DESC") //sorting by date of run
     fun getAllRunsSortedByDate(): LiveData<List<Run>>

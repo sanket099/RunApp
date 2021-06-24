@@ -7,20 +7,38 @@
 
     <TextView
         android:id="@+id/tvWelcome"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/righteous"
         android:padding="10dp"
-        android:text="Welcome!\nPlease enter your name and weight."
+        android:text="Welcome!"
         android:textAlignment="center"
         android:textColor="@color/honey_dew"
         android:textSize="36sp"
-        app:layout_constraintBottom_toTopOf="@+id/tilName"
+        app:layout_constraintBottom_toTopOf="@+id/tvEnter"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.445" />
+        app:layout_constraintVertical_bias="0.576" />
+
+    <TextView
+        android:id="@+id/tvEnter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/righteous"
+        android:padding="10dp"
+        android:text="Please enter \nyour name and weight."
+        android:textAlignment="center"
+        android:textColor="@color/honey_dew"
+        android:layout_marginTop="10dp"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@+id/tilName"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvWelcome"
+        app:layout_constraintVertical_bias="0.775" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilName"

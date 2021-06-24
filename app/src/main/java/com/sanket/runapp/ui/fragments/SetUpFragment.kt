@@ -62,8 +62,8 @@ class SetUpFragment: Fragment(R.layout.fragment_setup) {
             .putBoolean(FIRST_TIME_TOGGLE, false)
             .apply() //async
 
-        val toolbarText = "Welcome $userName"
-        requireActivity().tvToolbarTitle.text = toolbarText
+        //val toolbarText = "Welcome $userName"
+        requireActivity().tvToolbarTitle.text = getString(R.string.app_name)
         return true
 
     }

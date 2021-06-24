@@ -56,6 +56,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             legend.isEnabled = false
 
 
+
         }
 
     }
@@ -64,6 +65,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             it?.let {
                 val totalTimeRun = TrackingUtility.getFormattedStopWatchTime(it)
                 tvTotalTime.text = totalTimeRun
+
             }
         })
         viewModel.totalDistance.observe(viewLifecycleOwner, Observer {
@@ -98,6 +100,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
                 }
 
                 barChart.data = BarData(barData)
+                barData.color = ContextCompat.getColor(barChart.context, R.color.honey_dew)
                 barChart.marker = CustomMarkerView(it.reversed(), requireContext(), R.layout.marker_view)
                 barChart.invalidate()
             }

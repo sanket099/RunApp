@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -11,6 +12,7 @@ import android.util.Base64
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.AdapterView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -35,6 +37,7 @@ import kotlinx.android.synthetic.main.activity_zoom.*
 import kotlinx.android.synthetic.main.fragment_run.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import kotlin.math.max
 import kotlin.math.min
@@ -83,7 +86,24 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
         }
 
         viewModel.runs.observe(viewLifecycleOwner, Observer {
-            runAdapter.submitList(it)
+
+            if(it==null || it.isEmpty()){
+                tvEmpty.isVisible = true
+                rvRuns.isVisible = false
+                tvFilterBy.isVisible = false
+                spFilter.isVisible = false
+            }
+            else{
+                tvEmpty.isVisible = false
+                rvRuns.isVisible = true
+                tvFilterBy.isVisible = true
+                spFilter.isVisible = true
+
+                runAdapter.submitList(it)
+
+            }
+
+
         }) //sorting runs
 
 
@@ -98,12 +118,12 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
            // startActivity(Intent(context, ZoomActivity::class.java).putExtras(bundle))
 
             startActivity(Intent(context, ZoomActivity::class.java)
-                    .putExtra(RUN_IMAGE, getStringImage(it.img))
-                    .putExtra(RUN_NAME, it.runName.toString())
-                    .putExtra(RUN_TIMEINMILLIS, TrackingUtility.getFormattedStopWatchTime(it.timeInMillis).toString())
-                    .putExtra(RUN_SPEED, it.avgSpeedInKMH.toString())
+                  //  .putExtra(RUN_IMAGE, getStringImage(it.img))
+                  //  .putExtra(RUN_NAME, it.runName.toString())
+                  //  .putExtra(RUN_TIMEINMILLIS, TrackingUtility.getFormattedStopWatchTime(it.timeInMillis).toString())
+                 //   .putExtra(RUN_SPEED, it.avgSpeedInKMH.toString())
                     .putExtra(RUN_ID, it.id)
-                    .putExtra(RUN_DIST, it.distanceInMeters.toString())
+                 //   .putExtra(RUN_DIST, it.distanceInMeters.toString())
             )
         }
     }
@@ -112,8 +132,6 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
         runAdapter = RunAdapter()
         adapter = runAdapter
         layoutManager = LinearLayoutManager(requireContext())
-
-
 
     }
 
@@ -150,7 +168,7 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        turnGPSOn()
+        //turnGPSOn()
     }
 
     override fun onRequestPermissionsResult( //callback
@@ -196,7 +214,7 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
 
    // getActivity().getContentResolver().delete(uri, null, null);
 
-    private fun turnGPSOn() {
+    /*private fun turnGPSOn() {
         val provider: String = Settings.Secure.getString(context?.contentResolver, Settings.Secure.LOCATION_PROVIDERS_ALLOWED)
         if (!provider.contains("gps")) { //if gps is disabled
             val poke = Intent()
@@ -204,8 +222,9 @@ class RunFragment : Fragment(R.layout.fragment_run) , EasyPermissions.Permission
             poke.addCategory(Intent.CATEGORY_ALTERNATIVE)
             poke.data = Uri.parse("3")
             context?.sendBroadcast(poke)
+
         }
-    }
+    }*/
 
 
 

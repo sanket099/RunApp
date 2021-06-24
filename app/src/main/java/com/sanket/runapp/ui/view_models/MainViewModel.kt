@@ -9,6 +9,8 @@ import com.sanket.runapp.db.Run
 import com.sanket.runapp.other.SortType
 import com.sanket.runapp.repositories.MainRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,6 +24,8 @@ class MainViewModel @Inject constructor(
     private val runsSortedByCalories = mainRepository.getAllRunsSortedByCaloriesBurned()
     private val runsSortedByTime = mainRepository.getAllRunsSortedByTimeInMillis()
     private val runsSortedByAvgSpeed = mainRepository.getAllRunsSortedByAvgSpeed()
+
+
 
     //allows us to merge live data together
     val runs = MediatorLiveData<List<Run>>()
@@ -74,4 +78,10 @@ class MainViewModel @Inject constructor(
     fun deleteRun(id : Int) = viewModelScope.launch {
         mainRepository.deleteRun(id)
     }
+
+    suspend fun getRunById(id : Int) : Run {
+        return mainRepository.getRunById(id)
+
+    }
+
 }

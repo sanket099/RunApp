@@ -14,22 +14,25 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.sanket.runapp.BuildConfig
 import com.sanket.runapp.R
+import com.sanket.runapp.db.Run
 import com.sanket.runapp.other.Constants
-import com.sanket.runapp.other.Constants.RUN_DIST
 import com.sanket.runapp.other.Constants.RUN_ID
 import com.sanket.runapp.other.Constants.RUN_IMAGE
 import com.sanket.runapp.other.Constants.RUN_NAME
 import com.sanket.runapp.other.Constants.RUN_SPEED
 import com.sanket.runapp.other.Constants.RUN_TIMEINMILLIS
+import com.sanket.runapp.other.TrackingUtility
 import com.sanket.runapp.ui.fragments.CancelDialogFragment
 import com.sanket.runapp.ui.view_models.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_zoom.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.max
@@ -40,6 +43,7 @@ class ZoomActivity : AppCompatActivity() {
 
     private var mScaleGestureDetector: ScaleGestureDetector? = null
     private var mScaleFactor = 1.0f
+    private var shareBitmap : Bitmap? = null
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -51,30 +55,15 @@ class ZoomActivity : AppCompatActivity() {
 
         //val run = bundle?.getParcelable<Run>(RUN_OBJECT) as Run
 
-        val img =  intent.getStringExtra(RUN_IMAGE)
-        val name = intent.getStringExtra(RUN_NAME)
-        val speed = intent.getStringExtra(RUN_SPEED)
-        val dist = intent.getStringExtra(RUN_DIST)
-        val time =  intent.getStringExtra(RUN_TIMEINMILLIS)
         val id = intent.getIntExtra(RUN_ID, -1)
+        lifecycleScope.launch {
+            val run = viewModel.getRunById(id)
+            getData(run)
 
-        val str: String? = img
-        val data = Base64.decode(str, Base64.DEFAULT)
-        val bmp = BitmapFactory.decodeByteArray(data, 0, data.size)
-
-        Glide.with(this).load(bmp).into(ivZoomImg)
-
-        //tvZoomRun.text = run.runName
-        tvZoomRun.text = name
-
-        mScaleGestureDetector = ScaleGestureDetector(this, scaleListener)
-        val shareBitmap = drawTextToBitmap(this, bmp, dist.toString(), speed.toString(), time.toString())
-
-        Glide.with(this).load(shareBitmap).into(ivZoomImg)
-
-
+        }
 
         ivShare.setOnClickListener {
+            if(shareBitmap != null)
                 shareRec(getLocalBitmapUri(shareBitmap!!))
         }
 
@@ -85,6 +74,28 @@ class ZoomActivity : AppCompatActivity() {
 
                 }
         }
+
+    }
+
+    private fun getData(run: Run) {
+
+        val img = run.img
+        val name = run.runName
+        val speed = run.avgSpeedInKMH
+        val dist = run.distanceInMeters
+        val time =  run.timeInMillis
+
+
+        val bmp  = img
+        Glide.with(this).load(bmp).into(ivZoomImg)
+
+        //tvZoomRun.text = run.runName
+        tvZoomRun.text = name
+
+        mScaleGestureDetector = ScaleGestureDetector(this, scaleListener)
+        shareBitmap = drawTextToBitmap(this, bmp!!, dist.toString(), speed.toString(), TrackingUtility.getFormattedStopWatchTime(time).toString())
+
+        Glide.with(this).load(shareBitmap).into(ivZoomImg)
 
     }
 
@@ -215,6 +226,14 @@ class ZoomActivity : AppCompatActivity() {
             }
         }.show(supportFragmentManager, Constants.CANCEL_DIALOG_TAG)
     }
+
+    fun getStringImage(bmp: Bitmap?): String? {
+        val baos = ByteArrayOutputStream()
+        bmp?.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val imageBytes: ByteArray = baos.toByteArray()
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT)
+    }
+
 
 
 
